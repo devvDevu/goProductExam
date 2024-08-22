@@ -1,0 +1,4 @@
+env: "local"
+storage_path: "postgres://postgres:psql@localhost:5432/exam_database"
+http_server:
+  address: "localhost:8080"
