@@ -25,8 +25,8 @@ func SetupPGRepo (storagePath string) (*PGRepo, error) {
   create table if not exists product(
     id serial primary key,
     name varchar not null,
-    cost integer not null default=0,
-  )
+    cost integer not null default 0
+  );
   `)
   if err != nil {
     log.Printf("Failed to create table")

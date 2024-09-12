@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"goProductExam/internal/config"
-	"goProductExam/pkg/api"
-	"goProductExam/pkg/repository"
+  "goProductExam/pkg/infrastructure/repository"
+  "goProductExam/pkg/controller/http"
+  "goProductExam/pkg/usecase"
 	"log/slog"
 	"net/http"
 	"os"
@@ -20,12 +21,13 @@ const (
 func main() {
   cfg := config.MustLoad()
   log := setupLogger(cfg.Env)
-  db, err := repository.SetupPGRepo(cfg.StoragePath) 
+  p_db, err := repository.SetupPGRepo(cfg.StoragePath)
+  productRepo := usecase.New(p_db)
   if err != nil {
     fmt.Printf("log: %v\n", err)
     os.Exit(1)
   }
-  api := api.New(&sync.Mutex{},&http.ServeMux{}, db, log)
+  api := api.New(&sync.Mutex{},&http.ServeMux{}, productRepo, log)
   api.Handle()
   err = api.ListenAndServe(cfg.HttpServer.Address)
   if err != nil {

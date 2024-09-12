@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"goProductExam/pkg/models"
+	entity "goProductExam/pkg/entity"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,7 +13,7 @@ func (api *api) product (w http.ResponseWriter, r *http.Request) {
   switch r.Method{
   case http.MethodGet:
     api.mu.Lock()
-    products, err := api.db.GetProducts()
+    products, err := api.p.ProductGet()
     api.mu.Unlock()
     if err != nil {
       log.Fatal("GET db error")
@@ -23,13 +23,13 @@ func (api *api) product (w http.ResponseWriter, r *http.Request) {
       log.Fatal("GET encode error")
     }
   case http.MethodPost:
-    product := models.Product{}
+    product := entity.Product{}
     err := json.NewDecoder(r.Body).Decode(&product)
     if err != nil {
       log.Fatal("POST decode error")
     }
     api.mu.Lock()
-    id, err := api.db.CreateProduct(product)
+    id, err := api.p.ProductPost(product)
     api.mu.Unlock()
     if err != nil {
       log.Fatal("GET db error")
@@ -40,13 +40,13 @@ func (api *api) product (w http.ResponseWriter, r *http.Request) {
       log.Fatal("POST encode error")
     }
   case http.MethodPut:
-    product := models.Product{}
+    product := entity.Product{}
     err := json.NewDecoder(r.Body).Decode(&product)
     if err != nil {
       log.Fatal("PUT decode error")
     }
     api.mu.Lock()
-    product, err = api.db.UpdateCostProduct(product)
+    product, err = api.p.ProductPut(product)
     api.mu.Unlock()
     if err != nil {
       log.Fatal("PUT db error")
@@ -60,7 +60,7 @@ func (api *api) product (w http.ResponseWriter, r *http.Request) {
     convId, _ := strconv.Atoi(id)
 
     api.mu.Lock()
-    convId, err := api.db.DeleteProduct(convId)
+    convId, err := api.p.ProductDelete(convId)
     api.mu.Unlock()
     if err != nil {
       log.Fatal("DELETE db error")
